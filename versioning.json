@@ -1,5 +1,5 @@
 {
-  "buildTime": "2026-05-11T20:31:11.441Z",
+  "buildTime": "2026-05-11T20:40:16.415Z",
   "builtWith": {
     "toolchain": "1.0.0-alpha.64",
     "types": "1.0.0-alpha.64"
@@ -26,6 +26,7 @@
         1,
         64
       ],
+      "author": "RushiSompura",
       "id": "AquaManga"
     }
   ]
