@@ -18,5 +18,6 @@ const sourceInfo: ExtensionInfo = {
 export default {
   ...sourceInfo,
   author: 'RushiSompura',
+  desc: sourceInfo.description,
 }
 
