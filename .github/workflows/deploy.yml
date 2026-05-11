@@ -13,10 +13,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node.js Runtime
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '20.x'
           cache: 'npm'
@@ -28,6 +28,10 @@ jobs:
         run: |
           npm run build
           npm run bundle
+
+      - name: Prepare Deployment Artifacts
+        run: |
+          cp bundles/dist/versioning.json bundles/dist/index.min.json
 
       - name: Deploy Compiled Static Files to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
