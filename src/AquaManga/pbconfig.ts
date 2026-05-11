@@ -20,5 +20,7 @@ export default {
   author: 'RushiSompura',
   desc: sourceInfo.description,
   websiteBaseURL: 'https://aquareader.net',
+  lang: sourceInfo.language ?? 'en',
+  iconUrl: `https://rushisompura.github.io/aquamanga/AquaManga/static/icon.png`,
 }
 
