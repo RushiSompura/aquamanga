@@ -19,5 +19,6 @@ export default {
   ...sourceInfo,
   author: 'RushiSompura',
   desc: sourceInfo.description,
+  websiteBaseURL: 'https://aquareader.net',
 }
 
