@@ -1,5 +1,5 @@
 {
-  "buildTime": "2026-05-11T20:40:16.415Z",
+  "buildTime": "2026-05-11T20:45:53.772Z",
   "builtWith": {
     "toolchain": "1.0.0-alpha.64",
     "types": "1.0.0-alpha.64"
@@ -27,6 +27,7 @@
         64
       ],
       "author": "RushiSompura",
+      "desc": "Extension that pulls content from aquareader.net.",
       "id": "AquaManga"
     }
   ]
