@@ -7,6 +7,7 @@
   "scripts": {
     "build": "tsc",
     "bundle": "paperback-cli bundle --folder dist",
+    "postbundle": "bash -c 'mkdir -p bundles/dist/AquaManga/includes && mv bundles/dist/AquaManga/index.js bundles/dist/AquaManga/source.js && mv bundles/dist/AquaManga/static/icon.png bundles/dist/AquaManga/includes/icon.png && rm -rf bundles/dist/AquaManga/static'",
     "serve": "paperback-cli serve --port 8080"
   },
   "dependencies": {
