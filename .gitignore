@@ -1,0 +1,12 @@
+node_modules/
+dist/
+bundles/
+*.js
+!*.config.js
+.DS_Store
+Thumbs.db
+*.local
+.env
+.vscode/
+.idea/
+*.tsbuildinfo

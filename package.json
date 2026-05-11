@@ -1,0 +1,20 @@
+{
+  "name": "aquamanga-paperback-repo",
+  "repositoryName": "AquaManga Custom Repository",
+  "version": "1.0.0",
+  "description": "Custom Paperback iOS extension repository for AquaManga (aquareader.net)",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "bundle": "paperback-cli bundle",
+    "serve": "paperback-cli serve --port 8080"
+  },
+  "dependencies": {
+    "@paperback/toolchain": "^1.0.0-alpha.64",
+    "@paperback/types": "^1.0.0-alpha.64",
+    "cheerio": "^1.0.0-rc.12"
+  },
+  "devDependencies": {
+    "typescript": "~4.9.5"
+  }
+}

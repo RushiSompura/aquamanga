@@ -1,0 +1,37 @@
+name: Deploy Extension Repository
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  deploy-repo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js Runtime
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+          cache: 'npm'
+
+      - name: Install Project Dependencies
+        run: npm ci
+
+      - name: Compile and Bundle Paperback Packages
+        run: |
+          npm run build
+          npm run bundle
+
+      - name: Deploy Compiled Static Files to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: bundles
+          branch: repo
+          clean: true
