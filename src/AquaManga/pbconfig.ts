@@ -1,7 +1,7 @@
 import { ContentRating, ExtensionInfo, SourceIntents } from '@paperback/types'
 
 const sourceInfo: ExtensionInfo = {
-  version: '1.0.0',
+  version: '1.0.1',
   name: 'AquaManga',
   icon: 'icon.png',
   description: 'Extension that pulls content from aquareader.net.',

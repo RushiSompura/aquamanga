@@ -49,6 +49,14 @@ export class AquaMangaExtension implements MangaProviding, ChapterProviding, Sea
     ignoreImages: true,
   })
 
+  get requestManager(): any {
+    return this
+  }
+
+  get cheerio(): any {
+    return { load }
+  }
+
   async initialise(): Promise<void> {
     this.rateLimiter.registerInterceptor()
     this.interceptor.registerInterceptor()
@@ -291,6 +299,55 @@ export class AquaMangaExtension implements MangaProviding, ChapterProviding, Sea
 
     return {
       items,
+      metadata: hasNextPage ? { page: page + 1 } : undefined,
+    }
+  }
+
+  async getHomePageSections(sectionCallback: (section: any) => void): Promise<void> {
+    const $ = await this.fetchPage(DOMAIN)
+
+    sectionCallback({
+      id: 'latest_updates',
+      title: 'Latest Updates',
+      items: [],
+      containsMoreItems: true,
+    })
+
+    sectionCallback({
+      id: 'popular_manga',
+      title: 'Popular Manga',
+      items: [],
+      containsMoreItems: true,
+    })
+  }
+
+  async getViewMoreItems(homepageSectionId: string, metadata: any): Promise<any> {
+    const page = metadata?.page ?? 1
+    const url = homepageSectionId === 'popular_manga'
+      ? `${DOMAIN}/page/${page}/?m_orderby=rating`
+      : `${DOMAIN}/page/${page}/?m_orderby=latest`
+
+    const $ = await this.fetchPage(url)
+
+    const results: any[] = []
+    $('.c-tabs-item__content, .page-item-detail').each((_, element) => {
+      const titleEl = $('.post-title a', element).first()
+      const href = titleEl.attr('href') || ''
+      const title = titleEl.text().trim()
+      if (!title || !href) return
+
+      const mangaId = href.replace(`${DOMAIN}/manga/`, '').replace(/\/$/, '').split('/')[0]
+      const image = $('.tab-thumb img, img', element).first().attr('data-src')
+        || $('.tab-thumb img, img', element).first().attr('src')
+        || ''
+
+      results.push({ mangaId, title, image, subtitle: undefined })
+    })
+
+    const hasNextPage = $('.next.page-numbers, a.next.page-numbers, a.next').length > 0
+
+    return {
+      results,
       metadata: hasNextPage ? { page: page + 1 } : undefined,
     }
   }
