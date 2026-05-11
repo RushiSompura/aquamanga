@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "bundle": "paperback-cli bundle",
+    "bundle": "paperback-cli bundle --folder dist",
     "serve": "paperback-cli serve --port 8080"
   },
   "dependencies": {
