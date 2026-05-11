@@ -1,0 +1,32 @@
+{
+  "buildTime": "2026-05-11T20:28:48.209Z",
+  "builtWith": {
+    "toolchain": "1.0.0-alpha.64",
+    "types": "1.0.0-alpha.64"
+  },
+  "repository": {
+    "name": "aquamanga-paperback-repo",
+    "description": "Custom Paperback iOS extension repository for AquaManga (aquareader.net)"
+  },
+  "sources": [
+    {
+      "version": "1.0.0",
+      "name": "AquaManga",
+      "icon": "icon.png",
+      "description": "Extension that pulls content from aquareader.net.",
+      "contentRating": "MATURE",
+      "developers": [
+        {
+          "name": "RushiSompura"
+        }
+      ],
+      "language": "en",
+      "badges": [],
+      "capabilities": [
+        1,
+        64
+      ],
+      "id": "AquaManga"
+    }
+  ]
+}
