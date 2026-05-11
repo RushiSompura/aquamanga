@@ -1,6 +1,6 @@
 import { ContentRating, ExtensionInfo, SourceIntents } from '@paperback/types'
 
-const pbconfig: ExtensionInfo = {
+const sourceInfo: ExtensionInfo = {
   version: '1.0.0',
   name: 'AquaManga',
   icon: 'icon.png',
@@ -15,4 +15,8 @@ const pbconfig: ExtensionInfo = {
   ],
 }
 
-export default pbconfig
+export default {
+  ...sourceInfo,
+  author: 'RushiSompura',
+}
+
