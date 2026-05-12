@@ -61,6 +61,13 @@ export class AquaMangaExtension implements MangaProviding, ChapterProviding, Sea
       || $('article#chapter').attr('data-id')
   }
 
+  private resolveMangaId(idOrSource: any): string {
+    if (typeof idOrSource === 'string') return idOrSource
+    if (idOrSource && idOrSource.mangaId) return idOrSource.mangaId
+    if (idOrSource && idOrSource.id) return idOrSource.id
+    return String(idOrSource)
+  }
+
   async getMangaDetails(mangaId: string): Promise<SourceManga> {
     const $ = await this.fetchPage(`${DOMAIN}/manga/${mangaId}/`)
     const title = $('.post-title h1').text().trim()
@@ -69,13 +76,14 @@ export class AquaMangaExtension implements MangaProviding, ChapterProviding, Sea
     const artist = $('.artist-content a').text().trim() || undefined
     const synopsis = $('.description-summary.summary__content, .summary__content').text().trim()
     const st = $('.post-content_item:contains("Status") .summary-content').text().trim().toLowerCase()
-    const status = st.includes('ongoing') ? 'Ongoing' : st.includes('completed') ? 'Completed' : st.includes('hiatus') ? 'Hiatus' : st.includes('cancelled') ? 'Cancelled' : undefined
+    const status = st.includes('ongoing') ? 'Ongoing' : st.includes('completed') ? 'Completed' : st.includes('hiatus') ? 'Hiatus' : st.includes('cancelled') ? 'Cancelled' : 'Ongoing'
     const ratingText = $('span#averagerate').text().trim()
     const rating = ratingText ? parseFloat(ratingText) : undefined
     const tagGroups = this.parseGenres($)
 
     return {
       mangaId,
+      id: mangaId,
       mangaInfo: {
         primaryTitle: title,
         secondaryTitles: [],
@@ -87,6 +95,9 @@ export class AquaMangaExtension implements MangaProviding, ChapterProviding, Sea
         rating,
         contentRating: ContentRating.MATURE,
         tagGroups,
+        titles: [title],
+        image: thumbnail,
+        desc: synopsis,
       },
     }
   }
@@ -101,12 +112,13 @@ export class AquaMangaExtension implements MangaProviding, ChapterProviding, Sea
     return [{ id: 'genres', title: 'Genres', tags }]
   }
 
-  async getChapters(sourceManga: SourceManga, sinceDate?: Date): Promise<Chapter[]> {
-    const mangaId = sourceManga.mangaId
+  async getChapters(mangaIdOrSource: any, sinceDate?: Date): Promise<Chapter[]> {
+    const mangaId = this.resolveMangaId(mangaIdOrSource)
     const $page = await this.fetchPage(`${DOMAIN}/manga/${mangaId}/`)
     const postId = this.getPostId($page) || mangaId
     const $ = await this.fetchPage(`${DOMAIN}/wp-admin/admin-ajax.php`, 'POST', `action=manga_get_chapters&manga=${encodeURIComponent(postId)}`)
     const chs: Chapter[] = []
+    const sourceManga = typeof mangaIdOrSource === 'object' ? mangaIdOrSource : { mangaId }
     $('li.wp-manga-chapter').each((_: any, el: any) => {
       const a = $('a', el), href = a.attr('href') || '', title = a.text().trim()
       const slug = href.replace(`${DOMAIN}/manga/${mangaId}/`, '').replace(/\/$/, '').split('/')[0]
@@ -116,49 +128,54 @@ export class AquaMangaExtension implements MangaProviding, ChapterProviding, Sea
       const dt = $('.chapter-release-date', el).text().trim()
       const publishDate = this.parseDate(dt)
       if (sinceDate && publishDate && publishDate < sinceDate) return
-      chs.push({ chapterId, sourceManga, langCode: 'en', chapNum: cn, title: title || undefined, publishDate, sortingIndex: cn })
+      chs.push({ chapterId, id: chapterId, sourceManga, langCode: 'en', chapNum: cn, title: title || undefined, name: title || undefined, publishDate, time: publishDate, sortingIndex: cn })
     })
     return chs.sort((a, b) => b.chapNum - a.chapNum)
   }
 
-  async getChapterDetails(chapter: Chapter): Promise<ChapterDetails> {
-    const mangaId = chapter.sourceManga.mangaId
-    const chapterId = chapter.chapterId
-    const $ = await this.fetchPage(`${DOMAIN}/manga/${mangaId}/${chapterId}/?style=list`)
+  async getChapterDetails(mangaIdOrChapter: any, chapterId?: string): Promise<ChapterDetails> {
+    let mangaId: string, cid: string
+    if (typeof mangaIdOrChapter === 'object') {
+      mangaId = mangaIdOrChapter.sourceManga?.mangaId || mangaIdOrChapter.sourceManga?.id || mangaIdOrChapter.mangaId || ''
+      cid = mangaIdOrChapter.chapterId || mangaIdOrChapter.id || ''
+    } else {
+      mangaId = mangaIdOrChapter
+      cid = chapterId || ''
+    }
+    const $ = await this.fetchPage(`${DOMAIN}/manga/${mangaId}/${cid}/?style=list`)
     const pages: string[] = []
     $('.reading-content .page-break img, .reading-content img').each((_: any, el: any) => {
       const src = $(el).attr('data-src') || $(el).attr('data-lazy-src') || $(el).attr('src') || ''
       if (src && !pages.includes(src)) pages.push(src)
     })
-    return { id: chapterId, mangaId, pages }
+    return { id: cid, mangaId, pages }
   }
 
-  async getSearchResults(query: SearchQuery, metadata: unknown, _sortingOption?: SortingOption): Promise<PagedResults<SearchResultItem>> {
-    const page = (metadata as any)?.page ?? 1
-    const url = page === 1 ? `${DOMAIN}/?s=${encodeURIComponent(query.title || '')}&post_type=wp-manga` : `${DOMAIN}/page/${page}/?s=${encodeURIComponent(query.title || '')}&post_type=wp-manga`
+  async getSearchResults(query: any, metadata: any, _sortingOption?: any): Promise<any> {
+    const page = metadata?.page ?? 1
+    const title = typeof query === 'string' ? query : (query.title || '')
+    const url = page === 1 ? `${DOMAIN}/?s=${encodeURIComponent(title)}&post_type=wp-manga` : `${DOMAIN}/page/${page}/?s=${encodeURIComponent(title)}&post_type=wp-manga`
     const $ = await this.fetchPage(url)
-    const items: SearchResultItem[] = []
+    const items: any[] = []
     $('.c-tabs-item__content, .page-item-detail, .item-summary').each((_: any, el: any) => {
       const a = $('.post-title a', el).first(), href = a.attr('href') || '', title = a.text().trim()
       if (!title || !href) return
       const mid = href.replace(`${DOMAIN}/manga/`, '').replace(/\/$/, '').split('/')[0]
       const img = $('.tab-thumb img, img', el).first().attr('data-src') || $('.tab-thumb img, img', el).first().attr('src') || ''
-      items.push({ mangaId: mid, title, imageUrl: img, contentRating: ContentRating.MATURE })
+      items.push({ mangaId: mid, title, imageUrl: img, image: img, contentRating: ContentRating.MATURE })
     })
-    return { items, metadata: $('.next.page-numbers, a.next').length > 0 ? { page: page + 1 } : undefined }
+    return { items, results: items, metadata: $('.next.page-numbers, a.next').length > 0 ? { page: page + 1 } : undefined }
+  }
+
+  async getHomePageSections(sectionCallback: (section: any) => void): Promise<void> {
+    sectionCallback({ id: 'latest_updates', title: 'Latest Updates', items: [], containsMoreItems: false })
+  }
+
+  async getViewMoreItems(_sectionId: string, _metadata: any): Promise<any> {
+    return { results: [], items: [] }
   }
 
   async getSearchFilters(): Promise<SearchFilter[]> { return [] }
-
-  async getSortingOptions(_query: SearchQuery): Promise<SortingOption[]> {
-    return [
-      { id: 'latest', label: 'Latest' },
-      { id: 'new-manga', label: 'New Manga' },
-      { id: 'rating', label: 'Rating' },
-      { id: 'trending', label: 'Trending' },
-      { id: 'alphabetical', label: 'Alphabetical' },
-    ]
-  }
 
   async initialise(): Promise<void> {}
 }
