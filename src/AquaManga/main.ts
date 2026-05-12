@@ -98,8 +98,8 @@ export class AquaMangaExtension implements MangaProviding, ChapterProviding, Sea
         titles: [title],
         image: thumbnail,
         desc: synopsis,
-      },
-    }
+      } as any,
+    } as any
   }
 
   private parseGenres($: any) {
@@ -128,7 +128,7 @@ export class AquaMangaExtension implements MangaProviding, ChapterProviding, Sea
       const dt = $('.chapter-release-date', el).text().trim()
       const publishDate = this.parseDate(dt)
       if (sinceDate && publishDate && publishDate < sinceDate) return
-      chs.push({ chapterId, id: chapterId, sourceManga, langCode: 'en', chapNum: cn, title: title || undefined, name: title || undefined, publishDate, time: publishDate, sortingIndex: cn })
+      chs.push({ chapterId, id: chapterId, sourceManga, langCode: 'en', chapNum: cn, title: title || undefined, name: title || undefined, publishDate, time: publishDate, sortingIndex: cn } as any)
     })
     return chs.sort((a, b) => b.chapNum - a.chapNum)
   }
