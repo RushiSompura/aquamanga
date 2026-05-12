@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc",
     "bundle": "paperback-cli bundle --folder dist",
-    "postbundle": "python3 scripts/postbundle.py",
+    "postbundle": "cd bundles/dist/AquaManga && ln -sf index.js source.js && mkdir -p includes && cp static/icon.png includes/icon.png",
     "serve": "paperback-cli serve --port 8080"
   },
   "dependencies": {
