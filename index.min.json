@@ -1,5 +1,5 @@
 {
-  "buildTime": "2026-05-12T06:54:02.848Z",
+  "buildTime": "2026-05-12T07:09:37.411Z",
   "builtWith": {
     "toolchain": "1.0.0-alpha.64",
     "types": "1.0.0-alpha.64"
@@ -15,12 +15,17 @@
       "icon": "icon.png",
       "description": "Extension that pulls content from aquareader.net.",
       "contentRating": "MATURE",
-      "websiteBaseURL": "https://aquareader.net",
+      "developers": [
+        {
+          "name": "RushiSompura"
+        }
+      ],
       "language": "en",
-      "author": "RushiSompura",
-      "desc": "Extension that pulls content from aquareader.net.",
-      "intents": 53,
-      "tags": [],
+      "badges": [],
+      "capabilities": [
+        1,
+        64
+      ],
       "id": "AquaManga"
     }
   ]
